@@ -1,0 +1,376 @@
+:root {
+  --th-color: #f0f8ff;
+  font-family: Pretendard;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  max-width: 1200px;
+  width: 100%;
+  border: 2px solid black;
+}
+
+thead {
+  background-color: var(--th-color);
+}
+
+#date-row td {
+  cursor: pointer;
+  position: relative;
+}
+
+#date-row td:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  top: 0;
+  left: 0;
+  opacity: 0%;
+  transition: 0.2s all;
+}
+
+#date-row td:hover::after {
+  opacity: 20%;
+}
+
+tr,
+td,
+th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+#date-row td {
+  width: 24px;
+  text-align: center;
+}
+
+tbody td,
+#total-row td {
+  padding: 8px;
+}
+
+#checker td {
+  text-align: right;
+}
+
+#period {
+  white-space: nowrap;
+  padding: 12px 0px;
+}
+
+#info-receive {
+  display: none;
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(255, 255, 255);
+}
+
+#info-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(204 231 252);
+  padding: 24px 16px;
+  border-radius: 10px;
+}
+
+.info-input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.desc {
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+label {
+  font-family: Pretendard;
+  font-size: 18px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+input {
+  font-family: Pretendard;
+  border: none;
+  outline: none;
+  height: 50px;
+  width: 100%;
+  padding-left: 12px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+#input-button,
+#revise-button,
+#setting-close {
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 40px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: rgb(255 238 192);
+  transition: 0.5s;
+  font-family: Pretendard;
+}
+
+#setting-close {
+  margin-top: 4px;
+  background-color: #e3e3e3;
+}
+
+#setting-close:hover {
+  background-color: #d7d7d7;
+}
+
+#revise-button {
+  background-color: #bfdfff;
+}
+
+#revise-button:hover {
+  background-color: #97cbff;
+}
+
+#input-button:hover {
+  background-color: rgb(255, 215, 107);
+}
+
+main {
+  width: 100vw;
+  height: 100vh;
+}
+
+header {
+  display: none;
+  width: 100vw;
+  height: 80px;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+section {
+  display: none;
+  position: relative;
+  max-width: 1200px;
+  height: calc(100vh - 80px);
+  margin: 0 auto;
+}
+
+#header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+#logo {
+  height: auto;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+nav {
+  flex-grow: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  height: auto;
+}
+
+nav span {
+  flex-grow: 0;
+  background-color: #bfdfff;
+  padding: 4px 12px;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+nav span:hover {
+  background-color: #8cc5ff;
+}
+
+#util-btn {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+}
+
+.btn {
+  font-family: Pretendard;
+  font-weight: 700;
+  font-size: 18px;
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  position: relative;
+}
+
+.btn::after {
+  border-radius: 9999px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 30%;
+  transition: 0.1s all ease-in-out;
+}
+
+.btn:hover::after {
+  opacity: 0%;
+}
+
+#excel-select {
+  background-color: rgb(97, 255, 97);
+}
+
+#print {
+  background-color: #7efbff;
+}
+
+#prev,
+#next {
+  background-color: #d7d7d7;
+}
+
+.sunday {
+  color: red;
+}
+
+.saturday {
+  color: blue;
+}
+
+#table-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 12px 0px;
+}
+
+#order-controller {
+  margin-top: 60px;
+}
+
+#order-controller > p {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.order-item {
+  width: fit-content;
+  display: flex;
+  gap: 4px;
+  padding: 12px 12px;
+  background-color: #ececec;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.up,
+.down,
+.delete {
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+  background-position: center;
+  background-color: #ececec;
+}
+
+.up:hover,
+.down:hover,
+.delete:hover {
+  background-color: #afafaf;
+}
+
+.up {
+  background-image: url(../image/arrow-up.svg);
+}
+.down {
+  background-image: url(../image/arrow-down.svg);
+}
+.delete {
+  background-image: url(../image/close.svg);
+}
+
+#setting-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  justify-content: center;
+  align-items: center;
+}
+
+#setting-modal.open {
+  display: flex;
+}
+
+#setting {
+  width: 400px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 24px 24px;
+}
+
+#setting input {
+  background-color: #f2f2f2;
+}
+
+input[type="color"] {
+  padding: 0;
+}
+
+@media (max-width: 1200px) {
+  section,
+  #header-container {
+    padding: 0px 12px;
+  }
+}
+
+@media print {
+  header,
+  #util-btn,
+  #order-controller {
+    display: none !important;
+  }
+  thead {
+    background-color: var(--th-color) !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+@page {
+  size: landscape;
+  margin: 1cm 0;
+}

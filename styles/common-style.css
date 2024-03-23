@@ -1,0 +1,31 @@
+@font-face {
+    font-family: Pretendard;
+    src: url(../fonts/Pretendard-Black.otf);
+    font-weight: 900;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: Pretendard;
+    src: url(../fonts/Pretendard-Bold.otf);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: Pretendard;
+    src: url(../fonts/Pretendard-Regular.otf);
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  a{
+    text-decoration: none;
+    color: black;
+  }

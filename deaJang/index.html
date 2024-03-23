@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="jko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>특근급식대장페이지</title>
+    <link rel="stylesheet" href="../styles/common-style.css" />
+    <link rel="stylesheet" href="../styles/deaJang-style.css" />
+  </head>
+  <body>
+    <main>
+      <table>
+        <tbody></tbody>
+      </table>
+      <div id="btn">인쇄하기</div>
+    </main>
+    <script>
+      /**메인 데이터를 가져오는 함수 */
+      function getData() {
+        const year = localStorage.getItem("year");
+        const month = Number(localStorage.getItem("month"));
+        const data = localStorage.getItem(`${year}-${month}`);
+        const workLogs = JSON.parse(localStorage.getItem("workLogs")) ?? [];
+        if (data && workLogs.length !== 0) {
+          return {
+            renderData: JSON.parse(data),
+            workLogs: workLogs,
+            month,
+          };
+        } else {
+          alert("먼저 특근매식비 내역서를 만들어주세요!");
+          return window.close();
+        }
+      }
+
+      document
+        .querySelector("#btn")
+        .addEventListener("click", () => window.print());
+
+      const tbody = document.querySelector("tbody");
+      const { renderData, workLogs, month } = getData();
+
+      renderData
+        .filter((data) => data.people.length !== 0)
+        .forEach(({ date, people }) => {
+          if (people.length === 1) {
+            const [degree, name] = people[0].person.split(" ");
+            const matchWorkLogs = workLogs.filter(
+              (item) => item.name === name
+            )[0].workLog;
+            tbody.innerHTML += `
+                    <tr>
+                        <td>${month + 1}/${date}</td>
+                        <td>${degree}</td>
+                        <td>${name}</td>
+                        <td>${matchWorkLogs}</td>
+                        <td>〃</td>
+                    </tr>
+                    `;
+          } else if (people.length > 1) {
+            JSON.parse(localStorage.getItem("order")).forEach((name, index) => {
+              const match = people.filter((item) => item.person === name)[0];
+              if (!match) return;
+              const [degree, koreaName] = name.split(" ");
+              const matchWorkLogs = workLogs.filter(
+                (item) => item.name === koreaName
+              )[0].workLog;
+              tbody.innerHTML += `
+                            <tr>
+                                <td>${
+                                  index === 0 ? `${month + 1}/${date}` : ""
+                                }</td>
+                                <td>${degree}</td>
+                                <td>${koreaName}</td>
+                                <td>${matchWorkLogs}</td>
+                                <td>〃</td>
+                            </tr>
+                            `;
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
