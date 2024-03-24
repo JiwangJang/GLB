@@ -346,6 +346,13 @@ input[type="color"] {
   padding: 0;
 }
 
+.info-title {
+  font-size: 36px;
+  font-family: Pretendard;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
 @media (max-width: 1200px) {
   section,
   #header-container {
