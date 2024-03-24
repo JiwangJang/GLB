@@ -392,6 +392,7 @@ window.addEventListener("load", () => {
     localStorage.setItem("month", today.getMonth() - 1);
   }
   render();
+  document.querySelector("#loading").style.display = "none";
 });
 // 유틸버튼 이벤트 부착
 document

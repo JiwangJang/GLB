@@ -353,6 +353,42 @@ input[type="color"] {
   margin-bottom: 4px;
 }
 
+#loading {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#loading-container {
+  transform-origin: center center;
+  animation: rotate 2.5s infinite ease-in-out;
+}
+
+circle {
+  stroke-dashoffset: 220;
+  stroke-dasharray: 220;
+  animation: loading 1s infinite ease-in-out;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(720deg);
+  }
+}
+
+@keyframes loading {
+  to {
+    stroke-dashoffset: -220;
+  }
+}
+
 @media (max-width: 1200px) {
   section,
   #header-container {
