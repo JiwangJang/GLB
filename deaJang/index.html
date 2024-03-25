@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>특근급식대장</title>
     <link rel="stylesheet" href="../styles/common-style.css" />
-    <link rel="stylesheet" href="../styles/deaJang-style.css" />
+    <link rel="stylesheet" href="./styles.css" />
     <link rel="shortcut icon" href="./favicon.png" type="image/x-icon" />
   </head>
   <body>
@@ -22,11 +22,9 @@
         const year = localStorage.getItem("year");
         const month = Number(localStorage.getItem("month"));
         const data = localStorage.getItem(`${year}-${month}`);
-        const workLogs = JSON.parse(localStorage.getItem("workLogs")) ?? [];
-        if (data && workLogs.length !== 0) {
+        if (data) {
           return {
             renderData: JSON.parse(data),
-            workLogs: workLogs,
             month,
           };
         } else {
@@ -46,27 +44,22 @@
         .filter((data) => data.people.length !== 0)
         .forEach(({ date, people }) => {
           if (people.length === 1) {
+            if(people[0].ignore) return;
             const [degree, name] = people[0].person.split(" ");
-            const matchWorkLogs = workLogs.filter(
-              (item) => item.name === name
-            )[0].workLog;
             tbody.innerHTML += `
                     <tr>
                         <td>${month + 1}/${date}</td>
                         <td>${degree}</td>
                         <td>${name}</td>
-                        <td>${matchWorkLogs}</td>
+                        <td>${people[0].workLog}</td>
                         <td>〃</td>
                     </tr>
                     `;
           } else if (people.length > 1) {
             JSON.parse(localStorage.getItem("order")).forEach((name, index) => {
               const match = people.filter((item) => item.person === name)[0];
-              if (!match) return;
+              if (!match || match.ignore) return;
               const [degree, koreaName] = name.split(" ");
-              const matchWorkLogs = workLogs.filter(
-                (item) => item.name === koreaName
-              )[0].workLog;
               tbody.innerHTML += `
                             <tr>
                                 <td>${
@@ -74,7 +67,7 @@
                                 }</td>
                                 <td>${degree}</td>
                                 <td>${koreaName}</td>
-                                <td>${matchWorkLogs}</td>
+                                <td>${match.workLog}</td>
                                 <td>〃</td>
                             </tr>
                             `;

@@ -48,6 +48,15 @@ th {
   text-align: center;
 }
 
+tbody tr:not(#checker) td {
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+tbody tr:not(#checker) td:hover {
+  background-color: #dfdfdf;
+}
+
 tbody td,
 #total-row td {
   padding: 8px;
@@ -115,7 +124,9 @@ input {
 
 #input-button,
 #revise-button,
-#setting-close {
+#setting-close,
+#reset-button,
+#update-close {
   border: none;
   outline: none;
   width: 100%;
@@ -130,12 +141,28 @@ input {
   color: white;
 }
 
-#setting-close {
-  margin-top: 4px;
+#update-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#reset-button {
+  margin: 4px 0;
+  background-color: red;
+}
+
+#reset-button:hover {
+  background-color: rgb(197, 0, 0);
+}
+
+#setting-close,
+#update-close {
   background-color: #bababa;
 }
 
-#setting-close:hover {
+#setting-close:hover,
+#update-close:hover {
   background-color: #9b9b9b;
 }
 
@@ -279,13 +306,18 @@ nav span:hover {
 }
 
 .order-item {
-  width: fit-content;
+  width: 250px;
   display: flex;
-  gap: 4px;
+  justify-content: space-between;
   padding: 12px 12px;
   background-color: #ececec;
   border-radius: 10px;
   margin-top: 4px;
+}
+
+.order-item > div {
+  display: flex;
+  gap: 2px;
 }
 
 .up,
@@ -305,13 +337,13 @@ nav span:hover {
 }
 
 .up {
-  background-image: url(../image/arrow-up.svg);
+  background-image: url(../svg/arrow-up.svg);
 }
 .down {
-  background-image: url(../image/arrow-down.svg);
+  background-image: url(../svg/arrow-down.svg);
 }
 .delete {
-  background-image: url(../image/close.svg);
+  background-image: url(../svg/close.svg);
 }
 
 #setting-modal {
@@ -377,6 +409,57 @@ circle {
   animation: loading 1s infinite ease-in-out;
 }
 
+.ignore {
+  background-color: yellow;
+}
+
+#update {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#update.active {
+  display: flex;
+}
+
+#update-log {
+  width: 500px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 32px 32px 20px 32px;
+}
+
+#update-title {
+  font-family: Pretendard;
+  font-weight: 700;
+  font-size: 36px;
+}
+
+li {
+  list-style-position: inside;
+  font-size: 18px;
+}
+
+.update-item {
+  margin: 12px 0;
+}
+.update-item-title {
+  font-family: Pretendard;
+  font-weight: 700;
+  font-size: 20px;
+}
+#update-footer {
+  margin-top: 8px;
+  text-align: center;
+}
+
 @keyframes rotate {
   to {
     transform: rotate(720deg);
@@ -402,6 +485,9 @@ circle {
   #order-controller {
     display: none !important;
   }
+  .ignore {
+    background-color: white !important;
+  }
   thead {
     background-color: var(--th-color) !important;
     -webkit-print-color-adjust: exact;
@@ -410,5 +496,5 @@ circle {
 
 @page {
   size: landscape;
-  margin: 1cm 0;
+  margin: 1cm 0.5cm;
 }

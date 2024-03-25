@@ -2,141 +2,8 @@ const guepDB = {
   서기보: "9급",
   서기: "8급",
   주사보: "7급",
-  주사: "6급",
+  주사: "6급"
 };
-
-// 순서조정함수
-function up(e) {
-  const prev = e.target.parentElement.previousElementSibling;
-  if (!prev) return alert("맨 첫번째입니다");
-  const current = e.target.parentElement;
-  const origin = JSON.parse(localStorage.getItem("order"));
-
-  const cur_index = origin.indexOf(current.getAttribute("data-name"));
-  const prev_index = origin.indexOf(prev.getAttribute("data-name"));
-
-  // 기존제거
-  origin.splice(cur_index, 1);
-  origin.splice(prev_index, 1);
-
-  // 신규추가
-  origin.splice(cur_index, 0, prev.getAttribute("data-name"));
-  origin.splice(prev_index, 0, current.getAttribute("data-name"));
-  localStorage.setItem("order", JSON.stringify(origin));
-  render();
-}
-
-function down(e) {
-  const next = e.target.parentElement.nextElementSibling;
-  if (!next) return alert("마지막입니다");
-  const current = e.target.parentElement;
-  const origin = JSON.parse(localStorage.getItem("order"));
-
-  const cur_index = origin.indexOf(current.getAttribute("data-name"));
-  const next_index = origin.indexOf(next.getAttribute("data-name"));
-
-  // 기존제거
-  origin.splice(next_index, 1);
-  origin.splice(cur_index, 1);
-
-  // 신규추가
-  origin.splice(cur_index, 0, next.getAttribute("data-name"));
-  origin.splice(next_index, 0, current.getAttribute("data-name"));
-  localStorage.setItem("order", JSON.stringify(origin));
-  render();
-}
-
-function orderDelete(e) {
-  const renderData = getData();
-  const target = e.target.parentElement.getAttribute("data-name");
-  const filteredOrder = JSON.parse(localStorage.getItem("order")).filter(
-    (item) => item !== target
-  );
-  const filteredWorkLogs = JSON.parse(localStorage.getItem("workLogs")).filter(
-    (item) => item.name !== target.split(" ")[1]
-  );
-  const d = renderData.map(({ date, day, people }) => {
-    return {
-      date,
-      day,
-      people: people.filter((item) => item.person !== target),
-    };
-  });
-  localStorage.setItem("order", JSON.stringify(filteredOrder));
-  localStorage.setItem("workLogs", JSON.stringify(filteredWorkLogs));
-  setData(d);
-  render();
-}
-
-/**메인 데이터를 가져오는 함수 */
-function getData() {
-  const year = localStorage.getItem("year");
-  const month = localStorage.getItem("month");
-  const data = localStorage.getItem(`${year}-${month}`);
-  if (data) {
-    return JSON.parse(data);
-  } else {
-    const result = [];
-    const lastDate = new Date(year, Number(month) + 1, 0).getDate();
-    for (let i = 0; i < lastDate; i++) {
-      result.push({
-        date: i + 1,
-        day: new Date(year, month, i + 1).getDay(),
-        people: [],
-      });
-    }
-    localStorage.setItem(`${year}-${month}`, JSON.stringify(result));
-    return result;
-  }
-}
-
-/**메인데이터를 저장하는 함수 */
-function setData(data) {
-  const year = localStorage.getItem("year");
-  const month = localStorage.getItem("month");
-  localStorage.setItem(`${year}-${month}`, JSON.stringify(data));
-}
-
-// 엑셀을 읽는 함수
-function readExcel(file) {
-  return new Promise((resolve, reject) => {
-    const year = Number(localStorage.getItem("year"));
-    const month = Number(localStorage.getItem("month"));
-    const fileReader = new FileReader();
-    fileReader.readAsArrayBuffer(file);
-    fileReader.onload = (e) => {
-      const arrayBuffer = e.target.result;
-      const workbook = XLSX.read(arrayBuffer);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(worksheet);
-      const result = {
-        workDate: [],
-      };
-
-      try {
-        if (json[0].__EMPTY_4.indexOf("초과근무") === -1) reject("Error");
-      } catch (error) {
-        reject("Error");
-      }
-
-      for (let i = 3; i < json.length - 1; i++) {
-        const data = json[i];
-        if (
-          Number(data.__EMPTY_1.split("-")[0]) !== year ||
-          Number(data.__EMPTY_1.split("-")[1]) !== month + 1
-        )
-          reject("notMatch");
-
-        if (!result.name) result.name = data.__EMPTY_6;
-        if (!result.degree) result.degree = toSimpleDegree(data.__EMPTY_3);
-        if (!result.workLog) result.workLog = data.__EMPTY_13;
-        const workDate = Number(data.__EMPTY_1.split("-")[2]);
-        result.workDate.push({ workDate, workTime: Number(data.__EMPTY_9) });
-      }
-      resolve(result);
-    };
-  });
-}
 
 /**지방공업서기보 -> 공업9급 으로 만드는 함수 */
 function toSimpleDegree(degree) {
@@ -161,8 +28,165 @@ function toSimpleDegree(degree) {
       guep = guepDB[noJibang.substr(2)];
       break;
   }
-
   return `${jickRuel}${guep}`;
+}
+
+function orderUp(e) {
+  const prev = e.target.parentElement.parentElement.previousElementSibling;
+  if (!prev) return alert("맨 첫번째입니다");
+  const current = e.target.parentElement.parentElement;
+  const origin = JSON.parse(localStorage.getItem("order"));
+
+  const cur_index = origin.indexOf(current.getAttribute("data-name"));
+  const prev_index = origin.indexOf(prev.getAttribute("data-name"));
+
+  // 기존제거
+  origin.splice(cur_index, 1);
+  origin.splice(cur_index, 0, prev.getAttribute("data-name"));
+  origin.splice(prev_index, 1);
+
+  // 신규추가
+  origin.splice(prev_index, 0, current.getAttribute("data-name"));
+  localStorage.setItem("order", JSON.stringify(origin));
+  render();
+}
+
+function orderDown(e) {
+  const next = e.target.parentElement.parentElement.nextElementSibling;
+  if (!next) return alert("마지막입니다");
+  const current = e.target.parentElement.parentElement;
+  const origin = JSON.parse(localStorage.getItem("order"));
+
+  const cur_index = origin.indexOf(current.getAttribute("data-name"));
+  const next_index = origin.indexOf(next.getAttribute("data-name"));
+
+  // 기존제거
+  origin.splice(next_index, 1);
+  origin.splice(cur_index, 1);
+
+  // 신규추가
+  origin.splice(cur_index, 0, next.getAttribute("data-name"));
+  origin.splice(next_index, 0, current.getAttribute("data-name"));
+  localStorage.setItem("order", JSON.stringify(origin));
+  render();
+}
+
+function orderDelete(e) {
+  const renderData = getData();
+  const target = e.target.parentElement.parentElement.getAttribute("data-name");
+  const filteredOrder = JSON.parse(localStorage.getItem("order")).filter((item) => item !== target);
+  const d = renderData.map(({ date, day, people }) => {
+    return {
+      date,
+      day,
+      people: people.filter((item) => item.person !== target)
+    };
+  });
+  localStorage.setItem("order", JSON.stringify(filteredOrder));
+  setData(d);
+  render();
+}
+
+function jungSanRead(json, year, month, reject) {
+  const result = {
+    workData: []
+  };
+  for (let i = 3; i < json.length - 3; i++) {
+    const data = json[i];
+    if (Number(data.__EMPTY_10.split("-")[0]) !== year || Number(data.__EMPTY_10.split("-")[1]) !== month + 1)
+      reject("notMatch");
+
+    if (i === 3) {
+      result.name = data.__EMPTY_6;
+      result.degree = toSimpleDegree(data.__EMPTY_3);
+    }
+
+    const workDate = Number(data.__EMPTY_10.split("-")[2]);
+    result.workData.push({ workDate, workTime: Number(data.__EMPTY_15), workLog: data.__EMPTY_16 });
+  }
+  return result;
+}
+
+function hakinRead(json, year, month, reject) {
+  const result = {
+    workData: []
+  };
+
+  for (let i = 3; i < json.length - 1; i++) {
+    const data = json[i];
+    if (Number(data.__EMPTY_1.split("-")[0]) !== year || Number(data.__EMPTY_1.split("-")[1]) !== month + 1)
+      reject("notMatch");
+
+    // 공무직 분기처리
+    if (i === 3) {
+      if (data.__EMPTY_3) {
+        result.name = data.__EMPTY_6;
+        result.degree = toSimpleDegree(data.__EMPTY_3);
+      } else {
+        result.name = data.__EMPTY_4;
+        result.degree = "공무직";
+      }
+    }
+    const workDate = Number(data.__EMPTY_1.split("-")[2]);
+    result.workData.push({ workDate, workTime: Number(data.__EMPTY_9), workLog: data.__EMPTY_13 });
+  }
+  return result;
+}
+
+// 엑셀을 읽는 함수
+function readExcel(file) {
+  return new Promise((resolve, reject) => {
+    const year = Number(localStorage.getItem("year"));
+    const month = Number(localStorage.getItem("month"));
+    const fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(file);
+    fileReader.onload = (e) => {
+      const arrayBuffer = e.target.result;
+      const workbook = XLSX.read(arrayBuffer);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(worksheet);
+
+      switch (Object.values(json[0])[0].replace(/\s/g, "")) {
+        case "초과근무정산결과":
+          resolve(jungSanRead(json, year, month, reject));
+          break;
+        case "초과근무확인서":
+          resolve(hakinRead(json, year, month, reject));
+        default:
+          reject("Error");
+          break;
+      }
+    };
+  });
+}
+
+/**메인 데이터를 가져오는 함수 */
+function getData() {
+  const year = localStorage.getItem("year");
+  const month = localStorage.getItem("month");
+  const data = localStorage.getItem(`${year}-${month}`);
+  if (data) {
+    return JSON.parse(data);
+  } else {
+    const result = [];
+    const lastDate = new Date(year, Number(month) + 1, 0).getDate();
+    for (let i = 0; i < lastDate; i++) {
+      result.push({
+        date: i + 1,
+        day: new Date(year, month, i + 1).getDay(),
+        people: []
+      });
+    }
+    localStorage.setItem(`${year}-${month}`, JSON.stringify(result));
+    return result;
+  }
+}
+
+/**메인데이터를 저장하는 함수 */
+function setData(data) {
+  const year = localStorage.getItem("year");
+  const month = localStorage.getItem("month");
+  localStorage.setItem(`${year}-${month}`, JSON.stringify(data));
 }
 
 // 렌더링 함수
@@ -191,9 +215,7 @@ function render() {
     document.querySelector("thead").style.setProperty("--th-color", colorCode);
   }
 
-  document.querySelector(
-    "#table-title"
-  ).innerText = `${teamName} 특근급식비 지급명세서`;
+  document.querySelector("#table-title").innerText = `${teamName} 특근급식비 지급명세서`;
 
   // 급식내역 및 날짜렌더링
   const orderList = document.querySelector("#order-list");
@@ -202,6 +224,7 @@ function render() {
     const tr = document.createElement("tr");
     const [degree, name] = worker.split(" ");
     let total = 0;
+    tr.setAttribute("data-name", worker);
     tr.innerHTML = `
         <td>${degree}</td>
         <td>${name}</td>
@@ -209,48 +232,45 @@ function render() {
     orderList.innerHTML += `
     <div class="order-item" data-name="${worker}">
       <span>${worker}</span>
-      <div class='up' onclick="up(event)"></div>
-      <div class='down' onclick="down(event)"></div>
-      <div class='delete' onclick="orderDelete(event)"></div>
+      <div>
+        <div class='up' onclick="orderUp(event)"></div>
+        <div class='down' onclick="orderDown(event)"></div>
+        <div class='delete' onclick="orderDelete(event)"></div>
+      </div>
     </div>
-  `;
+    `;
     renderData.forEach(({ people, date, day }, dataIndex) => {
       // 날짜행 렌더
       if (workerIndex === 0) {
-        if (dataIndex === 0)
-          totalRow.innerHTML += `<td>계</td><td>${orderArr.length}명</td>`;
+        if (dataIndex === 0) totalRow.innerHTML += `<td>계</td><td>${orderArr.length}명</td>`;
 
         let smallTotal = 0;
         if (people.length !== 0) {
           if (day === 0 || day === 6) {
-            smallTotal = people.filter((item) => item.workTime >= 60).length;
+            smallTotal = people.filter((item) => item.workTime >= 60 && !item.ignore).length;
           } else {
-            smallTotal = people.length;
+            smallTotal = people.filter((item) => !item.ignore).length;
           }
         }
         totalRow.innerHTML += `<td>${smallTotal}</td>`;
         teamTotal += smallTotal;
-        dateRow.innerHTML += `<td class=${
-          day === 0 ? "sunday" : day === 6 ? "saturday" : ""
-        }>${date}</td>`;
+        dateRow.innerHTML += `<td class=${day === 0 ? "sunday" : day === 6 ? "saturday" : ""}>${date}</td>`;
       }
 
       // 각 직원 렌더
-      const target = people.filter(
-        (item) => item.person === `${degree} ${name}`
-      )[0];
-      if (!target) {
-        tr.innerHTML += "<td></td>";
+      const target = people.filter((item) => item.person === `${degree} ${name}`)[0];
+      if (!target || target.ignore) {
+        tr.innerHTML += `<td data-date=${date} class=${target?.ignore ? "ignore" : ""}></td>`;
       } else {
         if (day === 0 || day === 6) {
           if (target.workTime >= 60) {
-            tr.innerHTML += "<td>1</td>";
+            tr.innerHTML += `<td data-date=${date}>1</td>`;
             total++;
           } else {
-            tr.innerHTML += "<td></td>";
+            tr.innerHTML += `<td data-date=${date}></td>`;
           }
         } else {
-          tr.innerHTML += "<td>1</td>";
+          tr.innerHTML += `<td data-date=${date}>1</td>`;
           total++;
         }
       }
@@ -266,10 +286,7 @@ function render() {
       totalRow.innerHTML += `
       <td>${teamTotal}</td> 
       <td>8,000</td> 
-      <td>${String(teamTotal * 8000).replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        ","
-      )}</td> 
+      <td>${String(teamTotal * 8000).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td> 
       <td></td> 
     `;
     }
@@ -278,9 +295,7 @@ function render() {
 
   tbody.innerHTML += `
   <tr id="checker">
-    <td colspan="37">확인자 : ${localStorage.getItem(
-      "degree"
-    )} ${localStorage.getItem("name")} (인)</td>
+    <td colspan="37">확인자 : ${localStorage.getItem("degree")} ${localStorage.getItem("name")} (인)</td>
   </tr>
   `;
 }
@@ -326,40 +341,25 @@ document.querySelector("#excel").addEventListener("input", async (e) => {
     const result = await Promise.all(jsons);
     const origin = getData();
     const order = JSON.parse(localStorage.getItem("order")) ?? [];
-    const workLogs = JSON.parse(localStorage.getItem("workLogs")) ?? [];
-    result.forEach(({ degree, name, workDate, workLog }) => {
-      const matchWorkLog = workLogs.filter((item) => item.name === name)[0];
-
-      if (order.indexOf(`${degree} ${name}`) === -1)
-        order.push(`${degree} ${name}`);
+    result.forEach(({ degree, name, workData }) => {
+      if (order.indexOf(`${degree} ${name}`) === -1) order.push(`${degree} ${name}`);
       // 근무내역이 변경될경우 덮어씌우는 부분
-      if (!matchWorkLog) workLogs.push({ name, workLog });
-      else {
-        if (matchWorkLog.workLog !== workLog) {
-          workLogs.forEach((item) => {
-            if (item.name === name) {
-              item.workLog = workLog;
-            }
-          });
-        }
-      }
 
-      workDate.forEach((data, i) => {
+      workData.forEach((data) => {
         if (
-          origin[data.workDate - 1].people.filter(
-            (item) => item.person === `${degree} ${name}`
-          ).length !== 0
+          origin[data.workDate - 1].people.filter((item) => item.person === `${degree} ${name}`).length !== 0
         )
           return;
         origin[data.workDate - 1].people.push({
           person: `${degree} ${name}`,
           workTime: data.workTime,
+          ignore: false,
+          workLog: data.workLog
         });
       });
     });
     setData(origin);
     localStorage.setItem("order", JSON.stringify(order));
-    localStorage.setItem("workLogs", JSON.stringify(workLogs));
     e.target.value = "";
     render();
   } catch (error) {
@@ -378,8 +378,7 @@ window.addEventListener("load", () => {
   const degree = localStorage.getItem("degree");
   const name = localStorage.getItem("name");
   const teamName = localStorage.getItem("team-name");
-  if (!degree || !name || !teamName)
-    document.querySelector("#info-receive").style.display = "block";
+  if (!degree || !name || !teamName) document.querySelector("#info-receive").style.display = "block";
   else {
     document.querySelector("section").style.display = "block";
     document.querySelector("header").style.display = "block";
@@ -395,9 +394,7 @@ window.addEventListener("load", () => {
   document.querySelector("#loading").style.display = "none";
 });
 // 유틸버튼 이벤트 부착
-document
-  .querySelector("#print")
-  .addEventListener("click", () => window.print());
+document.querySelector("#print").addEventListener("click", () => window.print());
 document.querySelector("#prev").addEventListener("click", () => {
   const year = Number(localStorage.getItem("year"));
   const month = Number(localStorage.getItem("month"));
@@ -435,8 +432,7 @@ document.querySelector("#setting-open").addEventListener("click", () => {
   const originDegree = localStorage.getItem("degree");
   const originTeamName = localStorage.getItem("team-name");
   const originColor = localStorage.getItem("color") ?? "#f0f8ff";
-  const [degreeInput, nameInput, teamNameInput, colorInput] =
-    document.querySelectorAll("#setting input");
+  const [degreeInput, nameInput, teamNameInput, colorInput] = document.querySelectorAll("#setting input");
 
   degreeInput.value = originDegree;
   nameInput.value = originName;
@@ -449,14 +445,21 @@ document.querySelector("#setting-close").addEventListener("click", () => {
 });
 
 document.querySelector("#revise-button").addEventListener("click", () => {
-  const [degreeInput, nameInput, teamNameInput, colorInput] =
-    document.querySelectorAll("#setting input");
+  const [degreeInput, nameInput, teamNameInput, colorInput] = document.querySelectorAll("#setting input");
   localStorage.setItem("degree", degreeInput.value);
   localStorage.setItem("name", nameInput.value);
   localStorage.setItem("team-name", teamNameInput.value);
   localStorage.setItem("color", colorInput.value);
   document.querySelector("#setting-modal").classList.remove("open");
   render();
+});
+
+document.querySelector("#reset-button").addEventListener("click", () => {
+  if (confirm("정말 초기화 하시겠어요? 복구가 안되니 신중하게 선택하세요.")) {
+    localStorage.clear();
+    alert("초기화 완료");
+    window.location.reload();
+  }
 });
 
 document.querySelector("#date-row").addEventListener("click", (e) => {
@@ -468,7 +471,6 @@ document.querySelector("#date-row").addEventListener("click", (e) => {
         if (item.day === 0) {
           const year = localStorage.getItem("year");
           const month = localStorage.getItem("month");
-          console.log(year, month);
           item.day = new Date(year, month, item.date).getDay();
         } else {
           item.day = 0;
@@ -478,4 +480,52 @@ document.querySelector("#date-row").addEventListener("click", (e) => {
     setData(renderData);
     render();
   }
+});
+
+document.querySelector("tbody").addEventListener("click", (e) => {
+  if (
+    e.target.tagName === "TD" &&
+    e.target.parentElement.id !== "checker" &&
+    e.target.getAttribute("data-date")
+  ) {
+    const targetWorker = e.target.parentElement.getAttribute("data-name");
+    const targetDate = Number(e.target.getAttribute("data-date"));
+    const renderData = getData();
+
+    if (e.target.innerText) {
+      // 1이 표시돼 있을경우
+      renderData.forEach((item) => {
+        if (item.date === targetDate) {
+          item.people.forEach((personData) => {
+            if (personData.person === targetWorker) {
+              personData.ignore = true;
+            }
+          });
+        }
+      });
+    } else {
+      // 빈칸일경우
+      if (!e.target.classList.contains("ignore")) return alert("내역이 없습니다.");
+      renderData.forEach((item) => {
+        if (item.date === targetDate) {
+          item.people.forEach((personData) => {
+            if (personData.person === targetWorker) {
+              personData.ignore = false;
+              isHere = true;
+            }
+          });
+        }
+      });
+    }
+
+    setData(renderData);
+    render();
+  }
+});
+
+document.querySelector("#update-log-on").addEventListener("click", () => {
+  document.querySelector("#update").classList.add("active");
+});
+document.querySelector("#update-close").addEventListener("click", () => {
+  document.querySelector("#update").classList.remove("active");
 });
