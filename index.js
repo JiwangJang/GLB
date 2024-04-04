@@ -27,6 +27,9 @@ function toSimpleDegree(degree) {
             jickRuel = noJibang.substr(0, 2);
             guep = guepDB[noJibang.substr(2)];
             break;
+        default:
+            jickRuel = "임기제";
+            break;
     }
     return `${jickRuel}${guep}`;
 }
@@ -91,19 +94,39 @@ function jungSanRead(json, year, month, reject) {
     const result = {
         workData: [],
     };
-    for (let i = 3; i < json.length - 3; i++) {
-        const data = json[i];
-        if (Number(data.__EMPTY_10.split("-")[0]) !== year || Number(data.__EMPTY_10.split("-")[1]) !== month + 1)
-            reject("notMatch");
+
+    console.log(json);
+
+    json.forEach((data, i) => {
+        if (isNaN(data.__EMPTY)) return;
 
         if (i === 3) {
-            result.name = data.__EMPTY_6;
-            result.degree = toSimpleDegree(data.__EMPTY_3);
+            if (data.__EMPTY_3) {
+                result.name = data.__EMPTY_6;
+                result.degree = toSimpleDegree(data.__EMPTY_3);
+            } else {
+                result.name = data.__EMPTY_4;
+                result.degree = "공무직";
+            }
         }
 
-        const workDate = Number(data.__EMPTY_10.split("-")[2]);
-        result.workData.push({ workDate, workTime: Number(data.__EMPTY_15), workLog: data.__EMPTY_16 });
-    }
+        if (data.__EMPTY_3) {
+            // 공무원일경우
+            if (Number(data.__EMPTY_10.split("-")[0]) !== year || Number(data.__EMPTY_10.split("-")[1]) !== month + 1)
+                reject("notMatch");
+
+            const workDate = Number(data.__EMPTY_10.split("-")[2]);
+            result.workData.push({ workDate, workTime: Number(data.__EMPTY_15), workLog: data.__EMPTY_16 });
+        } else {
+            console.log("공무직");
+            // 공무직일경우
+            if (Number(data.__EMPTY_9.split("-")[0]) !== year || Number(data.__EMPTY_9.split("-")[1]) !== month + 1)
+                reject("notMatch");
+
+            const workDate = Number(data.__EMPTY_9.split("-")[2]);
+            result.workData.push({ workDate, workTime: Number(data.__EMPTY_12), workLog: data.__EMPTY_15 });
+        }
+    });
     return result;
 }
 
@@ -113,9 +136,8 @@ function hakinRead(json, year, month, reject) {
     };
 
     json.forEach((data, i) => {
-        if (isNaN(data.__EMPTY)) {
-            return;
-        }
+        if (isNaN(data.__EMPTY)) return;
+
         if (i === 3) {
             if (data.__EMPTY_3) {
                 result.name = data.__EMPTY_6;
