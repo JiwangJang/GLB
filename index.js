@@ -280,14 +280,12 @@ function render() {
     <td>${total}</td>
     <td>8,000</td>
     <td>${String(total * 8000).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-    <td></td>
   `;
         if (workerIndex === orderArr.length - 1) {
             totalRow.innerHTML += `
       <td>${teamTotal}</td> 
       <td>8,000</td> 
       <td>${String(teamTotal * 8000).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td> 
-      <td></td> 
     `;
         }
         tbody.append(tr);
