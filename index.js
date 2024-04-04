@@ -112,12 +112,11 @@ function hakinRead(json, year, month, reject) {
         workData: [],
     };
 
-    for (let i = 3; i < json.length - 1; i++) {
-        const data = json[i];
-        if (Number(data.__EMPTY_1.split("-")[0]) !== year || Number(data.__EMPTY_1.split("-")[1]) !== month + 1)
-            reject("notMatch");
-
-        // 공무직 분기처리
+    json.forEach((data, i) => {
+        if (isNaN(data.__EMPTY)) {
+            console.log("넘어감");
+            return;
+        }
         if (i === 3) {
             if (data.__EMPTY_3) {
                 result.name = data.__EMPTY_6;
@@ -127,9 +126,11 @@ function hakinRead(json, year, month, reject) {
                 result.degree = "공무직";
             }
         }
+        if (Number(data.__EMPTY_1.split("-")[0]) !== year || Number(data.__EMPTY_1.split("-")[1]) !== month + 1)
+            reject("notMatch");
         const workDate = Number(data.__EMPTY_1.split("-")[2]);
         result.workData.push({ workDate, workTime: Number(data.__EMPTY_9), workLog: data.__EMPTY_13 });
-    }
+    });
     return result;
 }
 
