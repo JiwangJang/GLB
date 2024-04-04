@@ -95,8 +95,6 @@ function jungSanRead(json, year, month, reject) {
         workData: [],
     };
 
-    console.log(json);
-
     json.forEach((data, i) => {
         if (isNaN(data.__EMPTY)) return;
 
@@ -118,7 +116,6 @@ function jungSanRead(json, year, month, reject) {
             const workDate = Number(data.__EMPTY_10.split("-")[2]);
             result.workData.push({ workDate, workTime: Number(data.__EMPTY_15), workLog: data.__EMPTY_16 });
         } else {
-            console.log("공무직");
             // 공무직일경우
             if (Number(data.__EMPTY_9.split("-")[0]) !== year || Number(data.__EMPTY_9.split("-")[1]) !== month + 1)
                 reject("notMatch");
@@ -381,13 +378,9 @@ document.querySelector("#excel").addEventListener("input", async (e) => {
         e.target.value = "";
         render();
     } catch (error) {
-        console.log(error);
-        if (error === "notMatch") {
-            return alert("설정하신 달과 입력하시려는 파일의 달이 다릅니다.");
-        }
-        if (error === "Error") {
-            return alert("양식이 맞지 않습니다.");
-        }
+        if (error === "notMatch") return alert("설정하신 달과 입력하시려는 파일의 달이 다릅니다.");
+        if (error === "Error") return alert("양식이 맞지 않습니다.");
+        return alert("모종의 오류가 있습니다. 개발자에게 문의하세요.");
     }
 });
 
