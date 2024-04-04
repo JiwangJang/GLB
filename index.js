@@ -114,7 +114,6 @@ function hakinRead(json, year, month, reject) {
 
     json.forEach((data, i) => {
         if (isNaN(data.__EMPTY)) {
-            console.log("넘어감");
             return;
         }
         if (i === 3) {
