@@ -409,6 +409,9 @@ circle {
 .ignore {
     background-color: yellow;
 }
+.forced {
+    background-color: red;
+}
 
 #update {
     position: fixed;
@@ -482,7 +485,8 @@ li {
     #order-controller {
         display: none !important;
     }
-    .ignore {
+    .ignore,
+    .force {
         background-color: white !important;
     }
     thead {

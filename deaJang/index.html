@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="jko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>특근급식대장</title>
-    <link rel="stylesheet" href="../styles/common-style.css" />
-    <link rel="stylesheet" href="./styles.css" />
-    <link rel="shortcut icon" href="./favicon.png" type="image/x-icon" />
-  </head>
-  <body>
-    <main>
-      <table>
-        <tbody></tbody>
-      </table>
-      <div id="btn">인쇄하기</div>
-    </main>
-    <script>
-      /**메인 데이터를 가져오는 함수 */
-      function getData() {
-        const year = localStorage.getItem("year");
-        const month = Number(localStorage.getItem("month"));
-        const data = localStorage.getItem(`${year}-${month}`);
-        if (data) {
-          return {
-            renderData: JSON.parse(data),
-            month,
-          };
-        } else {
-          alert("먼저 특근매식비 내역서를 만들어주세요!");
-          return window.close();
-        }
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>특근급식대장</title>
+        <link rel="stylesheet" href="../styles/common-style.css" />
+        <link rel="stylesheet" href="./styles.css" />
+        <link rel="shortcut icon" href="./favicon.png" type="image/x-icon" />
+    </head>
+    <body>
+        <main>
+            <table>
+                <tbody></tbody>
+            </table>
+            <div id="btn">인쇄하기</div>
+        </main>
+        <script>
+            /**메인 데이터를 가져오는 함수 */
+            function getData() {
+                const year = localStorage.getItem("year");
+                const month = Number(localStorage.getItem("month"));
+                const data = localStorage.getItem(`${year}-${month}`);
+                if (data) {
+                    return {
+                        renderData: JSON.parse(data),
+                        month,
+                    };
+                } else {
+                    alert("먼저 특근매식비 내역서를 만들어주세요!");
+                    return window.close();
+                }
+            }
 
-      document
-        .querySelector("#btn")
-        .addEventListener("click", () => window.print());
+            document.querySelector("#btn").addEventListener("click", () => window.print());
 
-      const tbody = document.querySelector("tbody");
-      const { renderData, workLogs, month } = getData();
+            const tbody = document.querySelector("tbody");
+            const { renderData, workLogs, month } = getData();
 
-      renderData
-        .filter((data) => data.people.length !== 0)
-        .forEach(({ date, people }) => {
-          if (people.length === 1) {
-            if(people[0].ignore) return;
-            const [degree, name] = people[0].person.split(" ");
-            tbody.innerHTML += `
+            renderData
+                .filter((data) => data.people.length !== 0)
+                .forEach(({ date, people }) => {
+                    let isFirst = true;
+                    if (people.length === 1) {
+                        // 한명만초과한경우
+                        if (people[0].ignore) return;
+                        const [degree, name] = people[0].person.split(" ");
+                        tbody.innerHTML += `
                     <tr>
                         <td>${month + 1}/${date}</td>
                         <td>${degree}</td>
@@ -55,25 +55,25 @@
                         <td>〃</td>
                     </tr>
                     `;
-          } else if (people.length > 1) {
-            JSON.parse(localStorage.getItem("order")).forEach((name, index) => {
-              const match = people.filter((item) => item.person === name)[0];
-              if (!match || match.ignore) return;
-              const [degree, koreaName] = name.split(" ");
-              tbody.innerHTML += `
+                    } else if (people.length > 1) {
+                        // 여러명이 초과한경우
+                        JSON.parse(localStorage.getItem("order")).forEach((name, index) => {
+                            const match = people.filter((item) => item.person === name)[0];
+                            if (!match || match.ignore) return;
+                            const [degree, koreaName] = name.split(" ");
+                            tbody.innerHTML += `
                             <tr>
-                                <td>${
-                                  index === 0 ? `${month + 1}/${date}` : ""
-                                }</td>
+                                <td>${isFirst ? `${month + 1}/${date}` : ""}</td>
                                 <td>${degree}</td>
                                 <td>${koreaName}</td>
                                 <td>${match.workLog}</td>
                                 <td>〃</td>
                             </tr>
                             `;
-            });
-          }
-        });
-    </script>
-  </body>
+                            isFirst = false;
+                        });
+                    }
+                });
+        </script>
+    </body>
 </html>

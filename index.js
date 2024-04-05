@@ -278,18 +278,18 @@ function render() {
 
             // 각 직원 렌더
             const target = people.filter((item) => item.person === `${degree} ${name}`)[0];
-            if (!target || target.ignore) {
+            if (!target || target.ignore || target.cancelForce) {
                 tr.innerHTML += `<td data-date=${date} class=${target?.ignore ? "ignore" : ""}></td>`;
             } else {
                 if (day === 0 || day === 6) {
                     if (target.workTime >= 60) {
-                        tr.innerHTML += `<td data-date=${date}>1</td>`;
+                        tr.innerHTML += `<td data-date=${date} class=${target.forced ? "forced" : ""}>1</td>`;
                         total++;
                     } else {
                         tr.innerHTML += `<td data-date=${date}></td>`;
                     }
                 } else {
-                    tr.innerHTML += `<td data-date=${date}>1</td>`;
+                    tr.innerHTML += `<td data-date=${date} class=${target.forced ? "forced" : ""}>1</td>`;
                     total++;
                 }
             }
@@ -505,29 +505,44 @@ document.querySelector("tbody").addEventListener("click", (e) => {
         const renderData = getData();
 
         if (e.target.innerText) {
-            // 1이 표시돼 있을경우
-            renderData.forEach((item) => {
-                if (item.date === targetDate) {
-                    item.people.forEach((personData) => {
-                        if (personData.person === targetWorker) {
-                            personData.ignore = true;
-                        }
-                    });
-                }
-            });
+            if (e.target.classList.contains("forced")) {
+                // 강제산출했다가 취소하는 경우
+                renderData.forEach((item) => {
+                    if (item.date !== targetDate) return;
+                    item.people = item.people.filter((personData) => personData.person !== targetWorker);
+                });
+            } else {
+                // 1만 있을경우
+                renderData.forEach((item) => {
+                    if (item.date === targetDate) {
+                        item.people.forEach((personData) => {
+                            if (personData.person === targetWorker) {
+                                personData.ignore = true;
+                            }
+                        });
+                    }
+                });
+            }
         } else {
             // 빈칸일경우
-            if (!e.target.classList.contains("ignore")) return alert("내역이 없습니다.");
-            renderData.forEach((item) => {
-                if (item.date === targetDate) {
+            // 렌더데이터에 강제로 사람추가
+
+            if (e.target.classList.contains("ignore")) {
+                // 산출제외했다가 취소하는 경우
+                renderData.forEach((item) => {
+                    if (item.date !== targetDate) return;
                     item.people.forEach((personData) => {
-                        if (personData.person === targetWorker) {
-                            personData.ignore = false;
-                            isHere = true;
-                        }
+                        if (personData.person !== targetWorker) return;
+                        personData.ignore = false;
                     });
-                }
-            });
+                });
+            } else {
+                // 강제산출
+                renderData.forEach((item) => {
+                    if (item.date !== targetDate) return;
+                    item.people.push({ person: targetWorker, workTime: 100, workLog: "강제산출", forced: true });
+                });
+            }
         }
 
         setData(renderData);
