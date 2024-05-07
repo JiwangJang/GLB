@@ -10,7 +10,7 @@ function toSimpleDegree(degree) {
     const noJibang = degree.replace(/\지방/g, "");
     let jickRuel, guep;
 
-    if (noJibang == "농촌지도사") return noJibang;
+    if (noJibang == "농촌지도사" || noJibang == "농촌연구사") return noJibang;
 
     switch (noJibang.length) {
         case 7:
