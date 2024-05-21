@@ -156,34 +156,34 @@
         <script>
             const date = new Date();
             const checkDate = localStorage.getItem("checkDate");
-            if (checkDate == date.getDate()) return;
-
-            const firebaseConfig = {
-                apiKey: "AIzaSyDVae7rl6EJCNX2Rzr07cY9AktcTMPd9Zo",
-                authDomain: "water-facility.firebaseapp.com",
-                projectId: "water-facility",
-                storageBucket: "water-facility.appspot.com",
-                messagingSenderId: "226407718816",
-                appId: "1:226407718816:web:4921c79fe6e2900c768ec5",
-                measurementId: "G-R41KDFLL0W",
-            };
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
-            const todayDb = db
-                .collection("auto-glb")
-                .doc(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`);
-            async function log() {
-                const doc = await todayDb.get();
-                const result = doc.data();
-                if (!result) {
-                    todayDb.set({ visit: 1 });
-                } else {
-                    const prevVisit = result.visit;
-                    todayDb.update({ visit: prevVisit + 1 });
+            if (!checkDate == date.getDate()) {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDVae7rl6EJCNX2Rzr07cY9AktcTMPd9Zo",
+                    authDomain: "water-facility.firebaseapp.com",
+                    projectId: "water-facility",
+                    storageBucket: "water-facility.appspot.com",
+                    messagingSenderId: "226407718816",
+                    appId: "1:226407718816:web:4921c79fe6e2900c768ec5",
+                    measurementId: "G-R41KDFLL0W",
+                };
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
+                const todayDb = db
+                    .collection("auto-glb")
+                    .doc(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`);
+                async function log() {
+                    const doc = await todayDb.get();
+                    const result = doc.data();
+                    if (!result) {
+                        todayDb.set({ visit: 1 });
+                    } else {
+                        const prevVisit = result.visit;
+                        todayDb.update({ visit: prevVisit + 1 });
+                    }
+                    localStorage.setItem("checkDate", date.getDate());
                 }
-                localStorage.setItem("checkDate", date.getDate());
+                log();
             }
-            log();
         </script>
         <script src="./index.js"></script>
     </body>
