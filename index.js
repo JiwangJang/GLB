@@ -116,14 +116,22 @@ function jungSanRead(json, year, month, reject) {
                 reject("notMatch");
 
             const workDate = Number(data.__EMPTY_10.split("-")[2]);
-            result.workData.push({ workDate, workTime: Number(data.__EMPTY_15), workLog: data.__EMPTY_16 });
+            const workTime = Number(data.__EMPTY_15);
+            if (workTime <= 0) {
+                return;
+            }
+            result.workData.push({ workDate, workTime, workLog: data.__EMPTY_16 });
         } else {
             // 공무직일경우
             if (Number(data.__EMPTY_9.split("-")[0]) !== year || Number(data.__EMPTY_9.split("-")[1]) !== month + 1)
                 reject("notMatch");
 
             const workDate = Number(data.__EMPTY_9.split("-")[2]);
-            result.workData.push({ workDate, workTime: Number(data.__EMPTY_12), workLog: data.__EMPTY_15 });
+            const workTime = Number(data.__EMPTY_12);
+            if (workTime <= 0) {
+                return;
+            }
+            result.workData.push({ workDate, workTime, workLog: data.__EMPTY_15 });
         }
     });
     return result;
@@ -149,7 +157,11 @@ function hakinRead(json, year, month, reject) {
         if (Number(data.__EMPTY_1.split("-")[0]) !== year || Number(data.__EMPTY_1.split("-")[1]) !== month + 1)
             reject("notMatch");
         const workDate = Number(data.__EMPTY_1.split("-")[2]);
-        result.workData.push({ workDate, workTime: Number(data.__EMPTY_9), workLog: data.__EMPTY_13 });
+        const workTime = Number(data.__EMPTY_9);
+        if (workTime <= 0) {
+            return;
+        }
+        result.workData.push({ workDate, workTime, workLog: data.__EMPTY_13 });
     });
     return result;
 }
